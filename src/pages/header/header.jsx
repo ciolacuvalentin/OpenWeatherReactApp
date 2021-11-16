@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar ,FormControl,Button,Form} from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import './header.css';
 
 const Header = () => {
@@ -12,10 +12,6 @@ const Header = () => {
             height="30"
             className="d-inline-block align-top mr-3"
           /> 
-          <Form inline>
-          <FormControl type="text" placeholder="Search"/>
-          <Button variant="outline-success" className="ml-2">Search</Button>
-        </Form>
         </Navbar.Brand>
         <a href="https://openweathermap.org/api" className="header-small-info">Build with OpenWeather API</a>
       </Navbar>

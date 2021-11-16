@@ -1,0 +1,7 @@
+.home_stile{
+    align-content: flex-end;
+    min-height: 90vh;
+    align-items: center;
+    color: rgb(8, 1, 0);
+    background-color: rgb(183, 218, 247);
+}
