@@ -3,19 +3,38 @@ import { getForecastFiveDays, getWeather } from "../../services/api";
 import { FormControl, Button, Form } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import "./home.css";
-
-// getForecastFiveDays().then(res => (console.log("Forecast",res)))
-// getWeather().then(res => (console.log("weather",res)))
+import TableComponent from "../../components/table/table";
 
 const Home = () => {
-  // const [search, setSearch] = useState(true);
   const [city, setCity] = useState("Bucharest");
   const [weather, setWeather] = useState();
   const [forecast, setForecast] = useState();
 
   useEffect(() => {
     getWeather(city).then((res) => setWeather(res));
-    getForecastFiveDays(city).then((res) => setForecast(res));
+    getForecastFiveDays(city).then((res) => {
+      console.log("rezultat forecast", res.cod);
+      if (res.cod)
+        setForecast(
+          res.list.map((k) => {
+            return {
+                data: k.dt_txt,
+                description: k.weather[0].description,
+                image: `http://openweathermap.org/img/wn/${k.weather[0].icon}@2x.png`,
+                temp: `${k.main.temp} °C`,
+                pressure: `${k.main.pressure} hPa`,
+                humidity: `${k.main.humidity} %`,
+                temp_min: `${k.main.temp_min} °C`,
+                temp_max: `${k.main.temp_max} °C`,
+                visibility: `${k.visibility/1000} km/h`,
+                speed_wind: `${k.wind.speed} km/h`,
+            };
+          })
+        );
+      else {
+        console.log("rezultat forecast", res.message);
+      }
+    });
   }, []);
 
   function handleInputOnChange(e) {
@@ -27,25 +46,42 @@ const Home = () => {
       console.log("rezultat weather", res.cod);
       if (res.cod === 200) setWeather(res);
       else {
-        console.log(res.message);
         console.log("rezultat weather", res.message);
       }
     });
     getForecastFiveDays(city).then((res) => {
       console.log("rezultat forecast", res.cod);
-      if (res.cod === 200) setForecast(res);
+      if (res.cod)
+        setForecast(
+          res.list.map((k, index) => {
+            return {
+            image: `http://openweathermap.org/img/wn/${k.weather[0].icon}@2x.png`,
+              data: k.dt_txt,
+              description: k.weather[0].description,
+              temp: `${k.main.temp} °C`,
+              pressure: `${k.main.pressure} hPa`,
+              humidity: `${k.main.humidity} %`,
+              temp_min: `${k.main.temp_min} °C`,
+              temp_max: `${k.main.temp_max} °C`,
+              visibility: `${k.visibility/1000} km/h`,
+              speed_wind: `${k.wind.speed} km/h`,
+            };
+          })
+        );
       else {
-        console.log(res.message);
         console.log("rezultat forecast", res.message);
       }
     });
     setWeather(null);
-    setForecast(undefined);
+    setForecast(null);
     setCity("");
   }
-
+  function buildTableHeaderData() {
+    return Object.keys(forecast[0]).filter((k) => k !== "id");
+  }
   console.log("weather", weather);
   console.log("forecast", forecast);
+
   return (
     <div className="home_stile">
       <Form
@@ -63,9 +99,8 @@ const Home = () => {
           Search
         </Button>
       </Form>
-      {/* { if (weather === null) <div> nu exista orasul </div> 
-elseif (weather === undefined) <Spinner animation="border" variant="primary" className="spinner_center" />
-else ( <div className="d-flex justify-content-center">
+      {/* {weather === null ? (<div> nu exista orasul </div>) :
+ ( weather === undefined ? (<div className="d-flex justify-content-center">
                         <div>
                                 <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} height="200"/>
                                 <div>Name : {weather.name}</div> 
@@ -79,11 +114,9 @@ else ( <div className="d-flex justify-content-center">
                 <div>
 
                 </div>
-        </div>
+        </div>) :<Spinner animation="border" variant="primary" className="spinner_center" />)} */}
 
-)} */}
-
-      {weather ? (
+      {weather || forecast ? (
         <div className="d-flex justify-content-center">
           <div>
             <img
@@ -98,14 +131,20 @@ else ( <div className="d-flex justify-content-center">
             <div>Visibility : {weather.visibility / 1000} km</div>
             <div>Speed wind: {weather.wind.speed} km/h</div>
           </div>
-          <div></div>
+          <div>
+            <h5 className="d-flex justify-content-center">5-day forecast</h5>
+            {forecast ? (
+              <TableComponent
+                headerData={buildTableHeaderData()}
+                tableData={forecast}
+              />
+            ) : (
+              <div className="spinner-center">erroare</div>
+            )}
+          </div>
         </div>
       ) : (
-        <Spinner
-          animation="border"
-          variant="primary"
-          className="spinner_center"
-        />
+        <h5 className="spinner_center">City not found </h5>
       )}
     </div>
   );

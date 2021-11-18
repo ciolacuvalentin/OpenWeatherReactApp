@@ -1,0 +1,7 @@
+td img {
+    width: 1.5rem;
+ }
+ .table-pagination{
+     display: flex;
+     justify-content: center;
+ }
