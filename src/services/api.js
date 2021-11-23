@@ -4,9 +4,12 @@ const instance = axios.create({
   baseURL: "https://api.openweathermap.org/data/2.5",
   headers: { Accept: "application/json" },
 });
-
+function appid(){
+  let appId = "61f2abd388a399395f5992ffed009f93"
+  return appId
+}
 export const getForecastFiveDays = async (city) => {
-  const appId = "61f2abd388a399395f5992ffed009f93";
+  const appId = appid();
   const units = "metric";
   try {
     const forecastData = await instance.get(

@@ -1,0 +1,20 @@
+.home_stile {
+  padding: 1rem;
+  align-content: flex-end;
+  min-height: 90vh;
+  align-items: center;
+  color: rgb(8, 1, 0);
+  background-color: rgb(183, 218, 247);
+}
+.spinner_center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: red;
+}
+
+.details-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
