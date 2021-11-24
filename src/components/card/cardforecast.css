@@ -1,0 +1,10 @@
+.card_forecast_container {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 60%;
+  justify-content: center;
+}
+
+.card-header {
+  background-color: #2599a8;
+}

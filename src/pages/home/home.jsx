@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getForecastFiveDays, getWeather } from "../../services/api";
-import { FormControl, Button, Form } from "react-bootstrap";
+import { FormControl, Button, Form, Card } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import "./home.css";
 import TableComponent from "../../components/table/table";
 import { useHistory } from "react-router-dom";
+import Cardforecast from "../../components/card/cardforecast";
 
 const Home = () => {
   const [city, setCity] = useState("Bucharest");
@@ -32,7 +33,7 @@ const Home = () => {
           temp_min: `${k.main.temp_min} °C`,
           temp_max: `${k.main.temp_max} °C`,
           visibility: `${k.visibility / 1000} km`,
-          speed_wind: `${k.wind.speed} km/h`,
+          wind_speed: `${k.wind.speed} km/h`,
         });
       }
     });
@@ -41,15 +42,28 @@ const Home = () => {
 
   function apiForecast() {
     getForecastFiveDays(city).then((res) => {
-      setSpinner(false);
-      console.log("rezultat forecast", res.cod);
-      if (res.cod) {
+      console.log("rezultat forecast", res);
+
+      if (res.cod === "200" && weather) {
         const filterRes = filterForecastData(res.list);
-        setForecast(filterRes);
+        const newWeatherObj = {
+          data: new Date().toLocaleString(),
+          image: `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
+          description: weather?.weather[0].description,
+          temp: `${weather?.main.temp} °C`,
+          temp_min: `${weather?.main.temp_min} °C`,
+          temp_max: `${weather?.main.temp_max} °C`,
+          humidity: `${weather?.main.humidity} %`,
+          pressure: `${weather?.main.pressure} hPa`,
+          visibility: `${weather?.visibility / 1000} km`,
+          wind_speed: `${weather?.wind.speed} km/h`,
+        };
+        setForecast([newWeatherObj, ...filterRes]);
       } else {
         console.log("rezultat forecast", res.message);
         setError(res.message);
       }
+      setSpinner(false);
     });
   }
 
@@ -57,12 +71,18 @@ const Home = () => {
     setSpinner(true);
     setError(null);
     getWeather(city).then((res) => {
-      if (res.cod === 200) setWeather(res);
-      else setError(res.message);
-      apiForecast();
+      if (res.cod === 200) {
+        console.log("weather", res);
+        setWeather({ ...res });
+      } else setError(res.message);
+
       //setCity("");
     });
   }, [startSearch]);
+
+  useEffect(() => {
+    apiForecast();
+  }, [weather]);
 
   useEffect(() => {
     document.addEventListener("keypress", handleEnterKey);
@@ -109,6 +129,7 @@ const Home = () => {
   function buildTableHeaderData() {
     return Object.keys(forecast[0]).filter((k) => k !== "id");
   }
+
   console.log("weather", weather);
   console.log("forecast", forecast);
 
@@ -140,9 +161,9 @@ const Home = () => {
       <div className="d-flex justify-content-center">
         {weather?.cod === 200 && !spinner && (
           <div>
-            <img
+            {/* <img
               src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-              height="200"
+              height="180"
             />
             <div>
               Name : {weather.sys.country} {weather.name}
@@ -152,27 +173,33 @@ const Home = () => {
             <div>Humidity : {weather.main.humidity} %</div>
             <div>Pressure : {weather.main.pressure} hPa</div>
             <div>Visibility : {weather.visibility / 1000} km</div>
-            <div>Speed wind: {weather.wind.speed} km/h</div>
+            <div>Speed wind: {weather.wind.speed} km/h</div> */}
           </div>
         )}
-        <div>
-          <h5 className="d-flex justify-content-center">5-day forecast</h5>
-          {forecast && !spinner && (
+      </div>
+      <div>
+        {forecast && weather && !spinner && (
+          <Cardforecast
+            headerData={buildTableHeaderData()}
+            tableData={forecast}
+          />
+        )}
+        {/* <Cardforecast weather={weather}/> */}
+        {/* {forecast && !spinner && (
             <TableComponent
               headerData={buildTableHeaderData()}
               tableData={forecast}
             />
-          )}
-        </div>
+          )} */}
       </div>
-      {!spinner && error && <h5 className="spinner_center_home">{error}</h5>}
-      {spinner && (
-        <Spinner
+      {/* </div> */}
+      {/* {(!spinner && error) && <h5 className="spinner_center_home">{error}</h5>} */}
+      {spinner && <Spinner
           animation="border"
           variant="primary"
           className="spinner_center"
         />
-      )}
+      }
     </div>
   );
 };

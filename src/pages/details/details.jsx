@@ -5,6 +5,8 @@ import Spinner from "react-bootstrap/Spinner";
 import "./details.css";
 import TableComponent from "../../components/table/table";
 import { Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHome } from '@fortawesome/free-solid-svg-icons'
 
 const Details = () => {
   //const [city, setCity] = useState("Bucharest");
@@ -97,10 +99,11 @@ const Details = () => {
     <div className="home_stile">
       <div>
         <div className="details-header">
-          <Link to="/" className="home-link">
-            Home
+    
+          <Link to="/" className="home-link"><FontAwesomeIcon  icon={faHome} size={"2x"} color="#55ff00" />
+             Home
           </Link>
-          <h5 className="d-flex justify-content-center">5-day forecast</h5>
+          <h5 className="d-flex justify-content-center" style={{ textTransform: 'uppercase' }}> {city}   5-day forecast </h5>
         </div>
         {forecast && !spinner && (
           <TableComponent

@@ -19,11 +19,6 @@ function App() {
       </Router>
       <Header />
     </div>
-    // <div className="App">
-    //   <Header/>
-    //   <Home/>
-    //   <Header/>
-    // </div >
   );
 }
 
